@@ -22,6 +22,14 @@ public class ScrollingManager : MonoBehaviour
         _instance.Scrolls.Add(scroll);
     }
 
+    public static void Unregister(ScrollingBehaviour scroll)
+    {
+        if (_instance == null)
+            return;
+
+        _instance.Scrolls.Remove(scroll);
+    }
+
     public static void SetSpeed(float speed)
     {
         if (_instance == null)
