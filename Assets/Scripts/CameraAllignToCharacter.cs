@@ -17,7 +17,7 @@ public class CameraAllignToCharacter : MonoBehaviour
     void Update()
     {
         _desiredLocation =  _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);
-        transform.position = Vector3.SmoothDamp(transform.position, _desiredLocation, ref _currentVelocity, 1, 5, Time.deltaTime);
+        transform.position = Vector3.SmoothDamp(transform.position, _desiredLocation, ref _currentVelocity, 0.2f, 100, Time.deltaTime);
     }
     
 }
