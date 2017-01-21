@@ -26,6 +26,9 @@ GameObject:
   - component: {fileID: 114355017310619002}
   - component: {fileID: 114953184320448412}
   - component: {fileID: 114535830758749702}
+  - component: {fileID: 114631783866170202}
+  - component: {fileID: 114947467492740996}
+  - component: {fileID: 114133781588835848}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -40,7 +43,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1215762989033856}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 4.220093, y: 2.4, z: -10}
+  m_LocalPosition: {x: 7.100093, y: 2.4, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -55,7 +58,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.10942908, g: 0.19840927, b: 0.33823532, a: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -66,7 +69,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 13
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -94,6 +97,19 @@ Behaviour:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1215762989033856}
   m_Enabled: 1
+--- !u!114 &114133781588835848
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1215762989033856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7e7e3416469538d4da5d547c5c42f8f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ExplosionPrefab: {fileID: 1426173141630290, guid: 725711cc89aaa8f49b9c1fd5ebbbb1e1,
+    type: 2}
 --- !u!114 &114355017310619002
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -116,7 +132,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d880f7d803e1a434fa555d888da9d0c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterOffset: {x: 7.5, y: 3}
+  detachPlayerOnHeight: -32.88
+  _characterOffset: {x: 10.38, y: 3}
+--- !u!114 &114631783866170202
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1215762989033856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bf02c255e174f94dade0e17305565a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BlackoutRenderer: {fileID: 0}
+  BlackoutDelay: 2
+  BlackoutDuration: 1
+  NextSceneName: Credits
+--- !u!114 &114947467492740996
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1215762989033856}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d524a79dfb5338d4c81d1100f58c399c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ScrollScale: 1
 --- !u!114 &114953184320448412
 MonoBehaviour:
   m_ObjectHideFlags: 1

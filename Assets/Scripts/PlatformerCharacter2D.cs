@@ -39,7 +39,8 @@ namespace UnityStandardAssets._2D
 
         bool waitForJumpInputReset = false;
         bool delayGroundCheckForJump = false;
-        bool slideOnCooldown = false;
+        float slideDuration = 0f;
+        float slideCooldown = 0f;
 
         float currentSpeedMultipler = 1;
         float desiredSpeedMultipler = 1;
@@ -54,6 +55,18 @@ namespace UnityStandardAssets._2D
 
         private void FixedUpdate()
         {
+            if (slideCooldown > 0f) {
+                slideCooldown -= Time.fixedDeltaTime;
+            }
+                
+            if (slideDuration > 0f) {
+                slideDuration -= Time.fixedDeltaTime;
+
+                if (slideDuration <= 0f) {
+                    StopSliding();
+                }
+            }
+
             m_Grounded = false;
             // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
             // This can be done using layers instead but Sample Assets will not overwrite your project settings.
@@ -77,60 +90,47 @@ namespace UnityStandardAssets._2D
             yield return new WaitForSeconds(0.2f);
             delayGroundCheckForJump = false;
         }
-
-        private IEnumerator StopSliding()
-        {
-            yield return new WaitForSeconds(m_MaxSlideTime);
-            HandleSliding(false);
-        }
-
-        private IEnumerator SlideCooldown()
-        {
-            slideOnCooldown = true;
-            yield return new WaitForSeconds(m_SlideCooldownTime);
-            slideOnCooldown = false;
-        }
-
-        private void HandleSliding(bool start)
-        {
-            if(start)
-            {
-                m_Anim.SetInteger("JumpLevel", 0);
-                m_DefaultCollider.gameObject.SetActive(false);
-                m_SlideCollider.gameObject.SetActive(true);
-                m_Anim.SetBool("Slide", true);
-                SetPlayerState(PlayerState.Sliding);
-                StartCoroutine("StopSliding");
-            }
-            else
-            {
-                m_SlideCollider.gameObject.SetActive(false);
-                m_DefaultCollider.gameObject.SetActive(true);
-                m_Anim.SetBool("Slide", false);
-                SetPlayerState(PlayerState.Running);
-                StopCoroutine("StopSliding");
-                StartCoroutine("SlideCooldown");
-            }
-        }
         
+        private void StartSliding()
+        {
+            m_Anim.SetInteger("JumpLevel", 0);
+            m_DefaultCollider.gameObject.SetActive(false);
+            m_SlideCollider.gameObject.SetActive(true);
+            m_Anim.SetBool("Slide", true);
+            SetPlayerState(PlayerState.Sliding);
+            slideDuration = m_MaxSlideTime;
+        }
+
+        private void StopSliding()
+        {
+            m_SlideCollider.gameObject.SetActive(false);
+            m_DefaultCollider.gameObject.SetActive(true);
+            m_Anim.SetBool("Slide", false);
+            SetPlayerState(PlayerState.Running);
+            slideCooldown = m_SlideCooldownTime;
+        }
+
         public void Move(bool slide, bool jump)
         {
             float moveSpeed = m_MoveSpeed;
             bool shouldRun = false;
 
-            if (slide && m_PlayerState == PlayerState.Running && !slideOnCooldown)
+            if (slide && m_PlayerState == PlayerState.Running && slideCooldown <= 0f)
             {
-                HandleSliding(true);
+                StartSliding();
             }
-            else if(!slide && (m_PlayerState == PlayerState.Sliding || m_PlayerState == PlayerState.Running))
+            else if(!slide && m_PlayerState == PlayerState.Sliding)
             {
-                HandleSliding(false);
+                StopSliding();
             }
             waitForJumpInputReset = waitForJumpInputReset && jump;
             // If the player should jump...
             if (m_Grounded && jump && (m_PlayerState == PlayerState.Running || m_PlayerState == PlayerState.Sliding))
             {
-                HandleSliding(false);
+                if (m_PlayerState == PlayerState.Sliding) {
+                    StopSliding();
+                }
+                
                 SetPlayerState(PlayerState.Jumping);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 1);

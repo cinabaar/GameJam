@@ -62,7 +62,10 @@ public class CharacterHealth : MonoBehaviour
         if (health == 0) {
             Screenshake.Shake(1f, 1.2f);
             gameObject.SetActive(false);
-            ScrollingManager.SetSpeed(0f);
+            //ScrollingManager.SetSpeed(0f);
+            var cam = Camera.main.GetComponent<CameraEndBehaviour>();
+            if (cam != null)
+                cam.Restart();
         }
     }
 
