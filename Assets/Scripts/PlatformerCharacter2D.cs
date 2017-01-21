@@ -21,6 +21,7 @@ namespace UnityStandardAssets._2D
         [SerializeField] private float m_SlideSpeedMultiplier = 1.5f;
         [SerializeField] private Vector2 m_SlideCapsuleSize = new Vector2(4, 4);
         [SerializeField] private float m_MinJumpTime = 0.2f;
+        [SerializeField] private float m_SlideCooldownTime = 0.5f;
 
         [SerializeField] private Animator m_Anim;            // Reference to the player's animator component.
         [SerializeField] private Rigidbody2D m_Rigidbody2D;
@@ -30,13 +31,26 @@ namespace UnityStandardAssets._2D
 
         [SerializeField] private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
 
-        const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
+        const float k_GroundedRadius = .3f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
-        
+
+        private PlayerState m_PrevPlayerState;
         private PlayerState m_PlayerState;
 
-        bool waitForJumpReset = false;
+        bool waitForJumpInputReset = false;
         bool delayGroundCheckForJump = false;
+        bool slideOnCooldown = false;
+
+        float currentSpeedMultipler = 1;
+        float desiredSpeedMultipler = 1;
+        float currentVelocity;
+
+        private void SetPlayerState(PlayerState newState)
+        {
+            if (newState == m_PlayerState) return;
+            m_PrevPlayerState = m_PlayerState;
+            m_PlayerState = newState;
+        }
 
         private void FixedUpdate()
         {
@@ -48,13 +62,13 @@ namespace UnityStandardAssets._2D
                 Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
                 for (int i = 0; i < colliders.Length; i++)
                 {
-                    if (colliders[i].gameObject != gameObject)
+                    if (colliders[i] != m_DefaultCollider && colliders[i] != m_SlideCollider)
                         m_Grounded = true;
                 }
             }
             if(m_Grounded && m_PlayerState != PlayerState.Sliding)
             {
-                m_PlayerState = PlayerState.Running;
+                SetPlayerState(PlayerState.Running);
             }
         }
         private IEnumerator DelayGroundCheckForJump()
@@ -70,14 +84,22 @@ namespace UnityStandardAssets._2D
             HandleSliding(false);
         }
 
+        private IEnumerator SlideCooldown()
+        {
+            slideOnCooldown = true;
+            yield return new WaitForSeconds(m_SlideCooldownTime);
+            slideOnCooldown = false;
+        }
+
         private void HandleSliding(bool start)
         {
             if(start)
             {
+                m_Anim.SetInteger("JumpLevel", 0);
                 m_DefaultCollider.gameObject.SetActive(false);
                 m_SlideCollider.gameObject.SetActive(true);
                 m_Anim.SetBool("Slide", true);
-                m_PlayerState = PlayerState.Sliding;
+                SetPlayerState(PlayerState.Sliding);
                 StartCoroutine("StopSliding");
             }
             else
@@ -85,43 +107,41 @@ namespace UnityStandardAssets._2D
                 m_SlideCollider.gameObject.SetActive(false);
                 m_DefaultCollider.gameObject.SetActive(true);
                 m_Anim.SetBool("Slide", false);
-                m_PlayerState = PlayerState.Running;
+                SetPlayerState(PlayerState.Running);
                 StopCoroutine("StopSliding");
+                StartCoroutine("SlideCooldown");
             }
         }
         
         public void Move(bool slide, bool jump)
         {
             float moveSpeed = m_MoveSpeed;
-            m_Anim.SetBool("Running", false);
+            bool shouldRun = false;
 
-            if (slide && m_PlayerState == PlayerState.Running)
+            if (slide && m_PlayerState == PlayerState.Running && !slideOnCooldown)
             {
                 HandleSliding(true);
             }
-            else if(!slide && m_PlayerState == PlayerState.Sliding)
+            else if(!slide && (m_PlayerState == PlayerState.Sliding || m_PlayerState == PlayerState.Running))
             {
                 HandleSliding(false);
             }
-            if(m_PlayerState == PlayerState.Sliding)
-            {
-                moveSpeed *= m_SlideSpeedMultiplier;
-            }
-            waitForJumpReset = waitForJumpReset && jump;
+            waitForJumpInputReset = waitForJumpInputReset && jump;
             // If the player should jump...
             if (m_Grounded && jump && (m_PlayerState == PlayerState.Running || m_PlayerState == PlayerState.Sliding))
             {
-                m_PlayerState = PlayerState.Jumping;
-                var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
+                HandleSliding(false);
+                SetPlayerState(PlayerState.Jumping);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 1);
+                var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
-                waitForJumpReset = true;
+                waitForJumpInputReset = true;
                 StartCoroutine(DelayGroundCheckForJump());
             }
-            else if (jump && !waitForJumpReset && m_PlayerState == PlayerState.Jumping)
+            else if (jump && !waitForJumpInputReset && m_PlayerState == PlayerState.Jumping)
             {
-                m_PlayerState = PlayerState.DoubleJump;
+                SetPlayerState(PlayerState.DoubleJump);
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 2);
@@ -130,11 +150,23 @@ namespace UnityStandardAssets._2D
             }
             if (m_Grounded && m_PlayerState == PlayerState.Running)
             {
-                m_Anim.SetBool("Running", true);
+                shouldRun = true;
                 m_Anim.SetInteger("JumpLevel", 0);
             }
-            ScrollingManager.SetSpeed(-moveSpeed);
-
+            if (m_PrevPlayerState == PlayerState.Sliding && m_PlayerState == PlayerState.Running)
+            {
+                currentSpeedMultipler = Mathf.SmoothDamp(currentSpeedMultipler, 1, ref currentVelocity, 0.2f);
+            }
+            else if(m_PlayerState == PlayerState.Sliding)
+            {
+                currentSpeedMultipler = m_SlideSpeedMultiplier;
+            }
+            else
+            {
+                currentSpeedMultipler = 1;
+            }
+            ScrollingManager.SetSpeed(-moveSpeed * currentSpeedMultipler);
+            m_Anim.SetBool("Running", shouldRun);
         }
     }
 }
