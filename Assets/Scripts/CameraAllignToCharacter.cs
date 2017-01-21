@@ -3,6 +3,8 @@
 [ExecuteInEditMode]
 public class CameraAllignToCharacter : MonoBehaviour
 {
+    public float detachPlayerOnHeight;
+
     [SerializeField] Vector2 _characterOffset;
 
     private Vector3 _desiredLocation;
@@ -16,6 +18,9 @@ public class CameraAllignToCharacter : MonoBehaviour
 
     void Update()
     {
+        if ( _redBotTransform.position.y < detachPlayerOnHeight )
+            return;
+
         _desiredLocation =  _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);
         transform.position = Vector3.SmoothDamp(transform.position, _desiredLocation, ref _currentVelocity, 0.2f, 100, Time.deltaTime);
     }
