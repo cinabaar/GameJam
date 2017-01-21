@@ -12,7 +12,7 @@ namespace UnityStandardAssets._2D
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
         [SerializeField] private float m_MaxSlideTime = 1f;
         [SerializeField] private float m_SlideSpeedMultiplier = 1.5f;
-
+        [SerializeField] private Vector2 m_SlideCapsuleSize = new Vector2(4, 4);
 
         private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
@@ -23,7 +23,8 @@ namespace UnityStandardAssets._2D
         private Rigidbody2D m_Rigidbody2D;
         private bool m_FacingRight = true;  // For determining which way the player is currently facing.
         private bool m_Sliding = false;
-        
+        private CapsuleCollider2D m_CapsuleCollider;
+        private Vector2 m_CapsuleSize;
 
         private void Awake()
         {
@@ -32,6 +33,8 @@ namespace UnityStandardAssets._2D
             m_CeilingCheck = transform.Find("CeilingCheck");
             m_Anim = GetComponent<Animator>();
             m_Rigidbody2D = GetComponent<Rigidbody2D>();
+            m_CapsuleCollider = GetComponent<CapsuleCollider2D>();
+            m_CapsuleSize = m_CapsuleCollider.size;
         }
 
 
@@ -63,15 +66,18 @@ namespace UnityStandardAssets._2D
         {
             if(start)
             {
+                m_CapsuleSize = m_CapsuleCollider.size;
                 m_Anim.SetBool("Slide", true);
                 m_Sliding = true;
                 StartCoroutine("StopSliding");
+                m_CapsuleCollider.size = m_SlideCapsuleSize;
             }
             else
             {
                 m_Anim.SetBool("Slide", false);
                 m_Sliding = false;
                 StopCoroutine("StopSliding");
+                m_CapsuleCollider.size = m_CapsuleSize;
             }
         }
 

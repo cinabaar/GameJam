@@ -5,6 +5,9 @@ public class CameraAllignToCharacter : MonoBehaviour
 {
     [SerializeField] Vector2 _characterOffset;
 
+    private Vector3 _desiredLocation;
+    private Vector3 _currentVelocity;
+
     private Transform _redBotTransform;
     void Awake()
     {
@@ -13,7 +16,8 @@ public class CameraAllignToCharacter : MonoBehaviour
 
     void Update()
     {
-        transform.position = _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);
+        _desiredLocation =  _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);
+        transform.position = Vector3.SmoothDamp(transform.position, _desiredLocation, ref _currentVelocity, 1, 5, Time.deltaTime);
     }
     
 }
