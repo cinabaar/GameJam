@@ -16,6 +16,7 @@ public class ExplosionManager : MonoBehaviour
         if (_instance != null && _instance.ExplosionPrefab != null) {
             GameObject go = Instantiate(_instance.ExplosionPrefab, obj.transform.position, Quaternion.identity);
             go.transform.localScale = Vector3.one * scale;
+            go.transform.localEulerAngles = new Vector3(0f, 0f, Random.value * 360f);
         }
 
         Destroy(obj);
