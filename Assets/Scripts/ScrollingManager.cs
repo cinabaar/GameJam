@@ -19,7 +19,8 @@ public class ScrollingManager : MonoBehaviour
         if (_instance == null)
             return;
 
-        _instance.Scrolls.Add(scroll);
+        if (!_instance.Scrolls.Contains(scroll))
+            _instance.Scrolls.Add(scroll);
     }
 
     public static void Unregister(ScrollingBehaviour scroll)

@@ -15,6 +15,16 @@ public class ScrollingBehaviour : MonoBehaviour {
         ScrollingManager.Unregister(this);
     }
 
+    public void OnEnable()
+    {
+        ScrollingManager.Register(this);
+    }
+
+    public void OnDisable()
+    {
+        ScrollingManager.Unregister(this);
+    }
+
     public void Scroll(float distance)
     {
         transform.localPosition += new Vector3(ScrollScale * distance, 0f, 0f);
