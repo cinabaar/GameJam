@@ -21,6 +21,7 @@ public class CameraEndBehaviour : MonoBehaviour {
     {
         CameraAlign = GetComponent<CameraAllignToCharacter>();
         CameraScroll = GetComponent<ScrollingBehaviour>();
+        StartCoroutine(AnimateStart());
     }
 
     public void End()
@@ -44,6 +45,17 @@ public class CameraEndBehaviour : MonoBehaviour {
         CameraScroll.enabled = true;
         NextSceneName = SceneManager.GetActiveScene().name;
         StartCoroutine(AnimateEnd());
+    }
+
+    IEnumerator AnimateStart()
+    {
+        BlackoutRenderer.gameObject.SetActive(true);
+        for (float t = 0; t < BlackoutDuration; t += Time.deltaTime) {
+            BlackoutRenderer.color = new Color(0f, 0f, 0f, 1f - t / BlackoutDuration);
+            yield return new WaitForEndOfFrame();
+        }
+
+        BlackoutRenderer.gameObject.SetActive(false);
     }
 
     IEnumerator AnimateEnd()
