@@ -17,14 +17,17 @@ public class CameraAllignToCharacter : MonoBehaviour
 
     void Awake()
     {
-        _redBotTransform = GameObject.Find("RedBot").transform;        
+        _redBotTransform = GameObject.Find("RedBot").transform;
     }
 
     void Update()
     {
         if (_redBotTransform.position.y < detachPlayerOnHeight)
         {
-            CameraDetached();
+            if (CameraDetached != null)
+            {
+                CameraDetached();
+            }
             return;
         }
         _desiredLocation =  _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);
