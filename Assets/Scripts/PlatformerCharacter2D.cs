@@ -4,56 +4,64 @@ using UnityEngine;
 
 namespace UnityStandardAssets._2D
 {
+    public enum PlayerState
+    {
+        Running = 0,
+        Jumping = 1,
+        DoubleJump = 2,
+        Sliding
+    }
+
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] private float m_MaxSpeed = 10f;                    // The fastest the player can travel in the x axis.
-        [SerializeField] private float m_JumpForce = 400f;                  // Amount of force added when the player jumps.
-        [SerializeField] private bool m_AirControl = false;                 // Whether or not a player can steer while jumping;
+        [SerializeField] private float m_MoveSpeed = 10f;                    // The fastest the player can travel in the x axis.
+        [SerializeField] private float m_JumpHeight = 1000f;                  // Amount of force added when the player jumps.
         [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
         [SerializeField] private float m_MaxSlideTime = 1f;
         [SerializeField] private float m_SlideSpeedMultiplier = 1.5f;
         [SerializeField] private Vector2 m_SlideCapsuleSize = new Vector2(4, 4);
+        [SerializeField] private float m_MinJumpTime = 0.2f;
 
-        private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
+        [SerializeField] private Animator m_Anim;            // Reference to the player's animator component.
+        [SerializeField] private Rigidbody2D m_Rigidbody2D;
+
+        [SerializeField] private CapsuleCollider2D m_DefaultCollider;
+        [SerializeField] private CapsuleCollider2D m_SlideCollider;
+
+        [SerializeField] private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
+
         const float k_GroundedRadius = .2f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
-        private Transform m_CeilingCheck;   // A position marking where to check for ceilings
-        const float k_CeilingRadius = .01f; // Radius of the overlap circle to determine if the player can stand up
-        private Animator m_Anim;            // Reference to the player's animator component.
-        private Rigidbody2D m_Rigidbody2D;
-        private bool m_FacingRight = true;  // For determining which way the player is currently facing.
-        private bool m_Sliding = false;
-        private CapsuleCollider2D m_CapsuleCollider;
-        private Vector2 m_CapsuleSize;
+        
+        private PlayerState m_PlayerState;
 
-        private void Awake()
-        {
-            // Setting up references.
-            m_GroundCheck = transform.Find("GroundCheck");
-            m_CeilingCheck = transform.Find("CeilingCheck");
-            m_Anim = GetComponent<Animator>();
-            m_Rigidbody2D = GetComponent<Rigidbody2D>();
-            m_CapsuleCollider = GetComponent<CapsuleCollider2D>();
-            m_CapsuleSize = m_CapsuleCollider.size;
-        }
-
+        bool waitForJumpReset = false;
+        bool delayGroundCheckForJump = false;
 
         private void FixedUpdate()
         {
             m_Grounded = false;
-
             // The player is grounded if a circlecast to the groundcheck position hits anything designated as ground
             // This can be done using layers instead but Sample Assets will not overwrite your project settings.
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
-            for (int i = 0; i < colliders.Length; i++)
+            if (!delayGroundCheckForJump)
             {
-                if (colliders[i].gameObject != gameObject)
-                    m_Grounded = true;
+                Collider2D[] colliders = Physics2D.OverlapCircleAll(m_GroundCheck.position, k_GroundedRadius, m_WhatIsGround);
+                for (int i = 0; i < colliders.Length; i++)
+                {
+                    if (colliders[i].gameObject != gameObject)
+                        m_Grounded = true;
+                }
             }
-            m_Anim.SetBool("Ground", m_Grounded);
-
-            // Set the vertical animation
-            m_Anim.SetFloat("vSpeed", m_Rigidbody2D.velocity.y);
+            if(m_Grounded && m_PlayerState != PlayerState.Sliding)
+            {
+                m_PlayerState = PlayerState.Running;
+            }
+        }
+        private IEnumerator DelayGroundCheckForJump()
+        {
+            delayGroundCheckForJump = true;
+            yield return new WaitForSeconds(0.2f);
+            delayGroundCheckForJump = false;
         }
 
         private IEnumerator StopSliding()
@@ -66,79 +74,67 @@ namespace UnityStandardAssets._2D
         {
             if(start)
             {
-                m_CapsuleSize = m_CapsuleCollider.size;
+                m_DefaultCollider.gameObject.SetActive(false);
+                m_SlideCollider.gameObject.SetActive(true);
                 m_Anim.SetBool("Slide", true);
-                m_Sliding = true;
+                m_PlayerState = PlayerState.Sliding;
                 StartCoroutine("StopSliding");
-                m_CapsuleCollider.size = m_SlideCapsuleSize;
             }
             else
             {
+                m_SlideCollider.gameObject.SetActive(false);
+                m_DefaultCollider.gameObject.SetActive(true);
                 m_Anim.SetBool("Slide", false);
-                m_Sliding = false;
+                m_PlayerState = PlayerState.Running;
                 StopCoroutine("StopSliding");
-                m_CapsuleCollider.size = m_CapsuleSize;
             }
         }
-
-        public void Move(float move, bool slide, bool jump)
+        
+        public void Move(bool slide, bool jump)
         {
+            float moveSpeed = m_MoveSpeed;
+            m_Anim.SetBool("Running", false);
 
-            //only control the player if grounded or airControl is turned on
-            if (m_Grounded || m_AirControl)
+            if (slide && m_PlayerState == PlayerState.Running)
             {
-                // The Speed animator parameter is set to the absolute value of the horizontal input.
-                m_Anim.SetBool("Running", true);
-                if (slide && !m_Sliding)
-                {
-                    HandleSliding(true);
-                }
-                else if(!slide && m_Sliding)
-                {
-                    HandleSliding(false);
-                }
-                if(m_Sliding)
-                {
-                    move *= m_SlideSpeedMultiplier;
-                }
-                // Move the character
-                ScrollingManager.SetSpeed(-move*m_MaxSpeed);
-
-                // If the input is moving the player right and the player is facing left...
-                if (move >= 0 && !m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
-                    // Otherwise if the input is moving the player left and the player is facing right...
-                else if (move < 0 && m_FacingRight)
-                {
-                    // ... flip the player.
-                    Flip();
-                }
+                HandleSliding(true);
             }
+            else if(!slide && m_PlayerState == PlayerState.Sliding)
+            {
+                HandleSliding(false);
+            }
+            if(m_PlayerState == PlayerState.Sliding)
+            {
+                moveSpeed *= m_SlideSpeedMultiplier;
+            }
+            waitForJumpReset = waitForJumpReset && jump;
             // If the player should jump...
-            if (m_Grounded && jump && m_Anim.GetBool("Ground"))
+            if (m_Grounded && jump && (m_PlayerState == PlayerState.Running || m_PlayerState == PlayerState.Sliding))
             {
-                // Add a vertical force to the player.
+                m_PlayerState = PlayerState.Jumping;
+                var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Grounded = false;
-                m_Anim.SetBool("Ground", false);
-                m_Rigidbody2D.AddForce(new Vector2(0f, m_JumpForce));
+                m_Anim.SetInteger("JumpLevel", 1);
+                m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
+                waitForJumpReset = true;
+                StartCoroutine(DelayGroundCheckForJump());
             }
-        }
+            else if (jump && !waitForJumpReset && m_PlayerState == PlayerState.Jumping)
+            {
+                m_PlayerState = PlayerState.DoubleJump;
+                var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
+                m_Grounded = false;
+                m_Anim.SetInteger("JumpLevel", 2);
+                m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
+                StartCoroutine(DelayGroundCheckForJump());
+            }
+            if (m_Grounded && m_PlayerState == PlayerState.Running)
+            {
+                m_Anim.SetBool("Running", true);
+                m_Anim.SetInteger("JumpLevel", 0);
+            }
+            ScrollingManager.SetSpeed(-moveSpeed);
 
-
-        private void Flip()
-        {
-            // Switch the way the player is labelled as facing.
-            m_FacingRight = !m_FacingRight;
-
-            // Multiply the player's x local scale by -1.
-            Vector3 theScale = transform.localScale;
-            theScale.x *= -1;
-            transform.localScale = theScale;
-
-            m_Rigidbody2D.velocity = Vector2.zero;
         }
     }
 }
