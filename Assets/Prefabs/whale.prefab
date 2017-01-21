@@ -20,6 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4070291107976466}
   - component: {fileID: 212472629238192812}
+  - component: {fileID: 114684480673478114}
   m_Layer: 0
   m_Name: whale
   m_TagString: Untagged
@@ -40,6 +41,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 200.059, y: -142.465, z: -167.361}
+--- !u!114 &114684480673478114
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1551755120405808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b0ba50d2a106024f9f5360c92f394c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 500
 --- !u!212 &212472629238192812
 SpriteRenderer:
   m_ObjectHideFlags: 1
