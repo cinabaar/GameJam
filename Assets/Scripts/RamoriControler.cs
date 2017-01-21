@@ -15,10 +15,10 @@ public class RamoriControler : MonoBehaviour
         }
 
         if (Input.GetKey(KeyCode.Z)) {
-            ScrollingManager.SetSpeed(0.1f);
+            ScrollingManager.SetSpeed(10f);
         }
         if (Input.GetKey(KeyCode.C)) {
-            ScrollingManager.SetSpeed(-0.1f);
+            ScrollingManager.SetSpeed(-10f);
         }
     }
 }
