@@ -43,6 +43,8 @@ public class CharacterHealth : MonoBehaviour
     
     private void OnTriggerEnter2D(Collider2D other)
     {
+        if (other.gameObject.GetComponent<CollectableComponent>() != null)
+            return;
         other.enabled = false;
         ExplosionManager.Explode(other.gameObject, 1f + Random.value * 0.2f);
 
