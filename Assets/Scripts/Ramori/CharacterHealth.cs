@@ -3,15 +3,23 @@
 public class CharacterHealth : MonoBehaviour
 {
     public float InvulnAfterHit = 0.5f;
+    public float BlinkInterval = 0.1f;
     public int MaxHealth = 5;
+    public Material BlinkMaterial;
 
     private int health;
     private float invuln = 0f;
+    private float blink = 0f;
+    private bool isBlinking = false;
     private Animator m_Anim;
+    private SpriteRenderer m_Renderer;
+    private Material m_DefaultMaterial;
 
     void Start()
     {
         m_Anim = GetComponent<Animator>();
+        m_Renderer = GetComponent<SpriteRenderer>();
+        m_DefaultMaterial = m_Renderer.material;
 
         health = MaxHealth;
         UIManager.InitHealth(health);
@@ -19,8 +27,18 @@ public class CharacterHealth : MonoBehaviour
 
     void Update()
     {
-        if (invuln > 0f)
-            invuln -= Time.deltaTime;
+        if (invuln <= 0f)
+            return;
+
+        invuln -= Time.deltaTime;
+        blink -= Time.deltaTime;
+
+        if (invuln <= 0f) {
+            m_Renderer.material = m_DefaultMaterial;
+        }
+        else if (blink <= 0f) {
+            FlipBlink();
+        }
     }
     
     private void OnTriggerEnter2D(Collider2D other)
@@ -31,10 +49,12 @@ public class CharacterHealth : MonoBehaviour
         if (invuln > 0f)
             return;
 
+        isBlinking = true;
+        blink = BlinkInterval;
+        m_Renderer.material = BlinkMaterial;
         m_Anim.SetTrigger("Hit");
         health--;
         UIManager.UpdateHealth(health);
-        Debug.LogWarning("HIT! " + health + "\n");
         Screenshake.Shake(0.3f, 0.3f);
         invuln = InvulnAfterHit;
         if (health == 0) {
@@ -42,5 +62,12 @@ public class CharacterHealth : MonoBehaviour
             gameObject.SetActive(false);
             ScrollingManager.SetSpeed(0f);
         }
+    }
+
+    private void FlipBlink()
+    {
+        isBlinking = !isBlinking;
+        blink = BlinkInterval;
+        m_Renderer.material = isBlinking ? BlinkMaterial : m_DefaultMaterial;
     }
 }
