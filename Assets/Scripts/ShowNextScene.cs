@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShowNextScene : MonoBehaviour {
     public string nextScene = "Scenes/Wojtek";
@@ -8,6 +9,8 @@ public class ShowNextScene : MonoBehaviour {
 
     private StartOptions start;
     private bool loading = false;
+
+    public Text BottomText;
 
     void Start ()
     {
@@ -20,6 +23,8 @@ public class ShowNextScene : MonoBehaviour {
 	void Update () {
 		if(Input.anyKeyDown && start!= null && !loading)
         {
+            if (BottomText != null)
+                BottomText.text = "LOADING . . .";
             loading = true;
             start.StartButtonClicked(nextScene);
         }
