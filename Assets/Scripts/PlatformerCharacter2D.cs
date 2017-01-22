@@ -46,9 +46,6 @@ namespace UnityStandardAssets._2D
         [SerializeField] private AudioClip m_jumpClip;
         [SerializeField] private AudioClip m_slideClip;
 
-        [SerializeField] private CapsuleCollider2D m_DefaultCollider;
-        [SerializeField] private CapsuleCollider2D m_SlideCollider;
-
         [SerializeField]
         private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
 
