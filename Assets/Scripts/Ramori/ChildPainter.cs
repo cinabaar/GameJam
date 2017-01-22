@@ -12,7 +12,8 @@ public class ChildPainter : MonoBehaviour
             Transform child = transform.GetChild(i);
             for (int j = 0; j < child.childCount; j++) {
                 SpriteRenderer sr = child.GetChild(j).GetComponent<SpriteRenderer>();
-                sr.color = color;
+                if (sr != null)
+                    sr.color = color;
             }
         }
     }

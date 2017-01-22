@@ -49,6 +49,7 @@ public class CharacterHealth : MonoBehaviour
             return;
         other.enabled = false;
         ExplosionManager.Explode(other.gameObject, 1f + UnityEngine.Random.value * 0.2f);
+        Destroy(other.gameObject);
 
         if (invuln > 0f)
             return;
