@@ -6,12 +6,12 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Credits.unity
-  - enabled: 1
     path: Assets/Scenes/MainMenu.unity
   - enabled: 1
-    path: Assets/Scenes/Dawid.unity
+    path: Assets/Scenes/Wojtek.unity
   - enabled: 1
     path: Assets/Scenes/Ramori.unity
   - enabled: 1
-    path: Assets/Scenes/Wojtek.unity
+    path: Assets/Scenes/Credits.unity
+  - enabled: 1
+    path: Assets/Scenes/Dawid.unity

@@ -44,6 +44,10 @@ public class CameraEndBehaviour : MonoBehaviour {
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
         AudioSource.loop = false;
+        if (AudioSource.clip.length > 5f)
+        {
+            AudioSource.Stop();
+        }
         StartCoroutine(AnimateEnd(true));
     }
 
@@ -56,6 +60,10 @@ public class CameraEndBehaviour : MonoBehaviour {
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
         AudioSource.loop = false;
+        if(AudioSource.clip.length > 5f)
+        {
+            AudioSource.Stop();
+        }
         FailSceneName = SceneManager.GetActiveScene().name;
         StartCoroutine(AnimateEnd(false));
     }
