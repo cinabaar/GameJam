@@ -5,10 +5,12 @@ using UnityEngine.UI;
 
 [RequireComponent(typeof(CameraAllignToCharacter))]
 [RequireComponent(typeof(ScrollingBehaviour))]
+[RequireComponent(typeof(AudioSource))]
 public class CameraEndBehaviour : MonoBehaviour {
 
     CameraAllignToCharacter CameraAlign;
     ScrollingBehaviour CameraScroll;
+    AudioSource AudioSource;
 
     bool isEnding = false;
 
@@ -16,12 +18,20 @@ public class CameraEndBehaviour : MonoBehaviour {
     public float BlackoutDelay = 2f;
     public float BlackoutDuration = 1f;
     public string NextSceneName = "";
+    public AudioClip EndClip;
 
     void Start()
     {
         CameraAlign = GetComponent<CameraAllignToCharacter>();
         CameraScroll = GetComponent<ScrollingBehaviour>();
+        AudioSource = GetComponent<AudioSource>();
         StartCoroutine(AnimateStart());
+    }
+
+    void FixedUpdate()
+    {
+        if ( !AudioSource.isPlaying )
+            AudioSource.PlayOneShot( EndClip, 1.0f );
     }
 
     public void End()
@@ -32,6 +42,7 @@ public class CameraEndBehaviour : MonoBehaviour {
         isEnding = true;
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
+        AudioSource.loop = false;
         StartCoroutine(AnimateEnd());
     }
 
@@ -43,6 +54,7 @@ public class CameraEndBehaviour : MonoBehaviour {
         isEnding = true;
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
+        AudioSource.loop = false;
         NextSceneName = SceneManager.GetActiveScene().name;
         StartCoroutine(AnimateEnd());
     }
@@ -67,6 +79,9 @@ public class CameraEndBehaviour : MonoBehaviour {
             BlackoutRenderer.color = new Color(0f, 0f, 0f, t / BlackoutDuration);
             yield return new WaitForEndOfFrame();
         }
+
+        while( AudioSource.isPlaying )
+            yield return new WaitForEndOfFrame();
 
         if (!string.IsNullOrEmpty(NextSceneName))
             SceneManager.LoadScene(NextSceneName);
