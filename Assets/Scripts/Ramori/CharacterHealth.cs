@@ -57,7 +57,8 @@ public class CharacterHealth : MonoBehaviour
         ExplosionManager.Explode(other.gameObject, 1f + UnityEngine.Random.value * 0.2f);
         Destroy(other.gameObject);
 
-        redBot.PlayOneShot( hitSounds[ (int)Math.Round( UnityEngine.Random.value * hitSounds.Length ) ] );
+        if ( hitSounds.Length > 0 )
+            redBot.PlayOneShot( hitSounds[ (int)Math.Round( UnityEngine.Random.value * ( hitSounds.Length - 1 ) ) ] );
 
         if (invuln > 0f)
             return;
