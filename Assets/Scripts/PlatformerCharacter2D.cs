@@ -139,7 +139,7 @@ namespace UnityStandardAssets._2D
                 waitForJumpInputReset = true;
                 StartCoroutine(DelayGroundCheckForJump());
             }
-            else if (jump && !waitForJumpInputReset && m_PlayerState == PlayerState.Jumping)
+            else if (jump && !waitForJumpInputReset && (m_PlayerState == PlayerState.Jumping || (m_PlayerState == PlayerState.Running && !m_Grounded)))
             {
                 SetPlayerState(PlayerState.DoubleJump);
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);

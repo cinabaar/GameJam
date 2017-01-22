@@ -5,6 +5,7 @@ public class FallingObstacleBehaviour : MonoBehaviour
 {
     public float Duration = 2f;
     public float Height = 5f;
+    public bool ShakeOnEnd;
 
     float Time = 0f;
     SpriteRenderer[] Renderers;
@@ -61,6 +62,8 @@ public class FallingObstacleBehaviour : MonoBehaviour
         if (Time > Duration) {
             transform.localPosition = new Vector3(transform.localPosition.x, StartY, transform.localPosition.z);
             transform.localScale = StartScale;
+            if (ShakeOnEnd)
+                Screenshake.Shake(0, 0.5f, 0.3f);
         }
     }
 }
