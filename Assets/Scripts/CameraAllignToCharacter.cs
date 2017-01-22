@@ -32,6 +32,7 @@ public class CameraAllignToCharacter : MonoBehaviour
                     cameraEnd.Restart();
                 }
             }
+            _redBotTransform.GetComponent<CharacterHealth>().Kill();
             return;
         }
         _desiredLocation =  _redBotTransform.position + new Vector3(_characterOffset.x, _characterOffset.y, -10);

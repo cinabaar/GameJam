@@ -94,8 +94,8 @@ namespace UnityStandardAssets._2D
         private void StartSliding()
         {
             m_Anim.SetInteger("JumpLevel", 0);
-            m_DefaultCollider.gameObject.SetActive(false);
             m_SlideCollider.gameObject.SetActive(true);
+            m_DefaultCollider.gameObject.SetActive(false);
             m_Anim.SetBool("Slide", true);
             SetPlayerState(PlayerState.Sliding);
             slideDuration = m_MaxSlideTime;
@@ -103,8 +103,8 @@ namespace UnityStandardAssets._2D
 
         private void StopSliding()
         {
-            m_SlideCollider.gameObject.SetActive(false);
             m_DefaultCollider.gameObject.SetActive(true);
+            m_SlideCollider.gameObject.SetActive(false);
             m_Anim.SetBool("Slide", false);
             SetPlayerState(PlayerState.Running);
             slideCooldown = m_SlideCooldownTime;
