@@ -12,6 +12,7 @@ namespace UnityStandardAssets._2D
         Sliding
     }
 
+    [RequireComponent(typeof(AudioSource))]
     public class PlatformerCharacter2D : MonoBehaviour
     {
         [SerializeField] private float m_MoveSpeed = 10f;                    // The fastest the player can travel in the x axis.
@@ -25,6 +26,10 @@ namespace UnityStandardAssets._2D
 
         [SerializeField] private Animator m_Anim;            // Reference to the player's animator component.
         [SerializeField] private Rigidbody2D m_Rigidbody2D;
+
+        private AudioSource m_Audio;
+        [SerializeField] private AudioClip m_jumpClip;
+        [SerializeField] private AudioClip m_slideClip;
 
         [SerializeField] private CapsuleCollider2D m_DefaultCollider;
         [SerializeField] private CapsuleCollider2D m_SlideCollider;
@@ -51,6 +56,11 @@ namespace UnityStandardAssets._2D
             if (newState == m_PlayerState) return;
             m_PrevPlayerState = m_PlayerState;
             m_PlayerState = newState;
+        }
+
+        private void Start()
+        {
+            m_Audio = GetComponent<AudioSource>();
         }
 
         private void FixedUpdate()
@@ -99,6 +109,7 @@ namespace UnityStandardAssets._2D
             m_Anim.SetBool("Slide", true);
             SetPlayerState(PlayerState.Sliding);
             slideDuration = m_MaxSlideTime;
+            m_Audio.PlayOneShot( m_slideClip );
         }
 
         private void StopSliding()
@@ -137,6 +148,7 @@ namespace UnityStandardAssets._2D
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
                 waitForJumpInputReset = true;
+                m_Audio.PlayOneShot( m_jumpClip );
                 StartCoroutine(DelayGroundCheckForJump());
             }
             else if (jump && !waitForJumpInputReset && m_PlayerState == PlayerState.Jumping)
@@ -146,6 +158,7 @@ namespace UnityStandardAssets._2D
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 2);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
+                m_Audio.PlayOneShot( m_jumpClip );
                 StartCoroutine(DelayGroundCheckForJump());
             }
             if (m_Grounded && m_PlayerState == PlayerState.Running)

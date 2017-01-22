@@ -103,6 +103,7 @@ GameObject:
   - component: {fileID: 50196849448811118}
   - component: {fileID: 114509755387277024}
   - component: {fileID: 114317693137537506}
+  - component: {fileID: 82866214119464436}
   m_Layer: 0
   m_Name: RedBot
   m_TagString: Untagged
@@ -156,7 +157,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1851351769631618}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -201.3, y: -28, z: 0}
+  m_LocalPosition: {x: -3.2799072, y: -0.6, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4913671964313968}
@@ -241,6 +242,86 @@ CapsuleCollider2D:
   m_Offset: {x: 0, y: -0.16}
   m_Size: {x: 3.04, y: 4.8}
   m_Direction: 0
+--- !u!82 &82866214119464436
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1851351769631618}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 0.509
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &95049329175300024
 Animator:
   serializedVersion: 3
@@ -269,6 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0a6daea4aef98b4cbb2308bf368b6aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collectSound: {fileID: 8300000, guid: 0a2ef13327a96a2448108f69f444ed24, type: 3}
   CollectedText: {fileID: 0}
 --- !u!114 &114509755387277024
 MonoBehaviour:
@@ -285,6 +367,10 @@ MonoBehaviour:
   BlinkInterval: 0.1
   MaxHealth: 5
   BlinkMaterial: {fileID: 2100000, guid: 9726f4111313ec64682a7e5090a72b57, type: 2}
+  hitSounds:
+  - {fileID: 8300000, guid: 8b667fab5e082c2449a48606cf18203a, type: 3}
+  - {fileID: 8300000, guid: 6820a80a14299a647bf4c1d13c993f53, type: 3}
+  - {fileID: 8300000, guid: cec81bce98cd36546acc647ea4a5f5f1, type: 3}
 --- !u!114 &114846424192906986
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -308,6 +394,8 @@ MonoBehaviour:
   m_SlideCooldownTime: 0.5
   m_Anim: {fileID: 95049329175300024}
   m_Rigidbody2D: {fileID: 50196849448811118}
+  m_jumpClip: {fileID: 8300000, guid: a4ade4ad7c798eb468c295436fd0093b, type: 3}
+  m_slideClip: {fileID: 8300000, guid: ec3723de6ea2a574cab9fc15617bb6f3, type: 3}
   m_DefaultCollider: {fileID: 70842007693313268}
   m_SlideCollider: {fileID: 70383197429201984}
   m_GroundCheck: {fileID: 4913671964313968}
