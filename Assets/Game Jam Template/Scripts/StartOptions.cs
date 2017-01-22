@@ -8,7 +8,7 @@ public class StartOptions : MonoBehaviour {
 
 
 
-	public int sceneToStart = 1;										//Index number in build settings of scene to load if changeScenes is true
+	public string SceneToStart;										//Index number in build settings of scene to load if changeScenes is true
 	public bool changeScenes;											//If true, load a new scene when Start is pressed, if false, fade out UI and continue in single scene
 	public bool changeMusicOnStart;										//Choose whether to continue playing menu music or start a new music clip
 
@@ -35,8 +35,9 @@ public class StartOptions : MonoBehaviour {
 	}
 
 
-	public void StartButtonClicked()
+	public void StartButtonClicked(string sceneToStart)
 	{
+        SceneToStart = sceneToStart;
 		//If changeMusicOnStart is true, fade out volume of music group of AudioMixer by calling FadeDown function of PlayMusic, using length of fadeColorAnimationClip as time. 
 		//To change fade time, change length of animation "FadeToColor"
 		if (changeMusicOnStart) 
@@ -47,8 +48,8 @@ public class StartOptions : MonoBehaviour {
 		//If changeScenes is true, start fading and change scenes halfway through animation when screen is blocked by FadeImage
 		if (changeScenes) 
 		{
-			//Use invoke to delay calling of LoadDelayed by half the length of fadeColorAnimationClip
-			Invoke ("LoadDelayed", fadeColorAnimationClip.length * .5f);
+            //Use invoke to delay calling of LoadDelayed by half the length of fadeColorAnimationClip
+            StartCoroutine(LoadDelayed());
 
 			//Set the trigger of Animator animColorFade to start transition to the FadeToOpaque state.
 			animColorFade.SetTrigger ("fade");
@@ -63,6 +64,17 @@ public class StartOptions : MonoBehaviour {
 
 	}
 
+    public void ResetScene(string sceneToLoad)
+    {
+        var pause = GetComponent<Pause>();
+        pause.UnPause();
+        if (sceneToLoad == "Scenes/MainMenu")
+        {
+            showPanels.ShowMenu();
+        }
+        SceneManager.LoadScene(sceneToLoad);
+
+    }
     void OnEnable()
     {
         SceneManager.sceneLoaded += SceneWasLoaded;
@@ -84,16 +96,17 @@ public class StartOptions : MonoBehaviour {
 	}
 
 
-	public void LoadDelayed()
+	public IEnumerator LoadDelayed()
 	{
-		//Pause button now works if escape is pressed since we are no longer in Main menu.
-		inMainMenu = false;
+        yield return new WaitForSeconds(fadeColorAnimationClip.length * .5f);
+        //Pause button now works if escape is pressed since we are no longer in Main menu.
+        inMainMenu = false;
 
 		//Hide the main menu UI element
 		showPanels.HideMenu ();
 
 		//Load the selected scene, by scene index number in build settings
-		SceneManager.LoadScene (sceneToStart);
+		SceneManager.LoadScene (SceneToStart);
 	}
 
 	public void HideDelayed()
