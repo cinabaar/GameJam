@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class CharacterHealth : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class CharacterHealth : MonoBehaviour
     private Animator m_Anim;
     private SpriteRenderer m_Renderer;
     private Material m_DefaultMaterial;
+    public Action PlayerDied;
 
     void Start()
     {
@@ -46,7 +48,7 @@ public class CharacterHealth : MonoBehaviour
         if (other.gameObject.GetComponent<CollectableComponent>() != null)
             return;
         other.enabled = false;
-        ExplosionManager.Explode(other.gameObject, 1f + Random.value * 0.2f);
+        ExplosionManager.Explode(other.gameObject, 1f + UnityEngine.Random.value * 0.2f);
 
         if (invuln > 0f)
             return;
@@ -65,7 +67,9 @@ public class CharacterHealth : MonoBehaviour
             //ScrollingManager.SetSpeed(0f);
             var cam = Camera.main.GetComponent<CameraEndBehaviour>();
             if (cam != null)
+            {
                 cam.Restart();
+            }
         }
     }
 
