@@ -30,7 +30,7 @@ namespace UnityStandardAssets._2D
         private void FixedUpdate()
         {
             // Read the inputs.
-            bool slide = Input.GetKey(KeyCode.RightAlt);
+            bool slide = CrossPlatformInputManager.GetButtonDown("Fire2");
             // Pass all parameters to the character control script.
             m_Character.Move(slide, m_Jump);
             m_Jump = false;

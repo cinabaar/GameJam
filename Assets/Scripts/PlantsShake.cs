@@ -25,6 +25,7 @@ public class PlantsShake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (smilingFoliage == null) return;
         int index = 0;
         foreach ( GameObject instance in smilingFoliage )
         {
