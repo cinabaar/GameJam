@@ -10,6 +10,12 @@ public class CreditsRun : MonoBehaviour
     void Start()
     {
         animator.SetBool("Running", true);
+
+        var ui = GameObject.Find("UI");
+        if (ui == null) return;
+        var start = ui.GetComponent<ShowPanels>();
+        start.ShowHighscorePanel();
+        
     }
 	// Update is called once per frame
 	void Update () {
@@ -19,4 +25,12 @@ public class CreditsRun : MonoBehaviour
             Player.position = new Vector3(-10, Player.position.y, Player.position.z);
         }
 	}
+
+    void OnDestroy()
+    {
+        var ui = GameObject.Find("UI");
+        if (ui == null) return;
+        var start = ui.GetComponent<ShowPanels>();
+        start.HideHighscorePanel();
+    }
 }

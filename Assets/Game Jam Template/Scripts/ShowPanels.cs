@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ShowPanels : MonoBehaviour {
 
@@ -7,7 +8,7 @@ public class ShowPanels : MonoBehaviour {
 	public GameObject optionsTint;							//Store a reference to the Game Object OptionsTint 
 	public GameObject menuPanel;							//Store a reference to the Game Object MenuPanel 
 	public GameObject pausePanel;							//Store a reference to the Game Object PausePanel 
-
+    public GameObject highscorePanel;
 
 	//Call this function to activate and display the Options panel during the main menu
 	public void ShowOptionsPanel()
@@ -23,8 +24,13 @@ public class ShowPanels : MonoBehaviour {
 		optionsTint.SetActive(false);
 	}
 
-	//Call this function to activate and display the main menu panel during the main menu
-	public void ShowMenu()
+    public void HideHighscorePanel()
+    {
+        highscorePanel.SetActive(false);
+    }
+
+    //Call this function to activate and display the main menu panel during the main menu
+    public void ShowMenu()
 	{
 		menuPanel.SetActive (true);
 	}
@@ -49,4 +55,11 @@ public class ShowPanels : MonoBehaviour {
 		optionsTint.SetActive(false);
 
 	}
+    public void ShowHighscorePanel()
+    {
+        HidePausePanel();
+        HideMenu();
+        HideOptionsPanel();
+        highscorePanel.SetActive(true);
+    }
 }
