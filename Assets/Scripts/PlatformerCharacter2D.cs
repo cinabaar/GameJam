@@ -64,6 +64,13 @@ namespace UnityStandardAssets._2D
         float desiredSpeedMultipler = 1;
         float currentVelocity;
 
+        [SerializeField]
+        private ParticleSystem JumpParticles;
+        [SerializeField]
+        private ParticleSystem DoubleJumpParticles;
+        [SerializeField]
+        private ParticleSystem SlideParticles;
+
         private void SetPlayerState(PlayerState newState)
         {
             if (newState == m_PlayerState) return;
@@ -119,17 +126,20 @@ namespace UnityStandardAssets._2D
 
         private void StartSliding()
         {
+            SlideParticles.Play();
             m_Anim.SetInteger("JumpLevel", 0);
             m_SlideCollider.gameObject.SetActive(true);
             m_DefaultCollider.gameObject.SetActive(false);
             m_Anim.SetBool("Slide", true);
             SetPlayerState(PlayerState.Sliding);
             slideDuration = m_MaxSlideTime;
+            m_Audio.pitch = 1f;
             m_Audio.PlayOneShot( m_slideClip );
         }
 
         private void StopSliding()
         {
+            SlideParticles.Stop();
             m_DefaultCollider.gameObject.SetActive(true);
             m_SlideCollider.gameObject.SetActive(false);
             m_Anim.SetBool("Slide", false);
@@ -159,23 +169,26 @@ namespace UnityStandardAssets._2D
                     StopSliding();
                 }
 
+                JumpParticles.Play();
                 SetPlayerState(PlayerState.Jumping);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 1);
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
                 waitForJumpInputReset = true;
+                m_Audio.pitch = 1f;
                 m_Audio.PlayOneShot( m_jumpClip );
                 StartCoroutine(DelayGroundCheckForJump());
             }
-            else if (jump && !waitForJumpInputReset && (m_PlayerState == PlayerState.Jumping || (m_PlayerState == PlayerState.Running && !m_Grounded)))
-            {
+            else if (jump && !waitForJumpInputReset && (m_PlayerState == PlayerState.Jumping || (m_PlayerState == PlayerState.Running && !m_Grounded))) {
+                DoubleJumpParticles.Play();
                 SetPlayerState(PlayerState.DoubleJump);
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 2);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
-                m_Audio.PlayOneShot( m_jumpClip );
+                m_Audio.pitch = 1.5f;
+                m_Audio.PlayOneShot(m_jumpClip);
                 StartCoroutine(DelayGroundCheckForJump());
             }
             if (m_Grounded && m_PlayerState == PlayerState.Running)
