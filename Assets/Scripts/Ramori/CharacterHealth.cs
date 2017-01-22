@@ -57,7 +57,8 @@ public class CharacterHealth : MonoBehaviour
         ExplosionManager.Explode(other.gameObject, 1f + UnityEngine.Random.value * 0.2f);
         Destroy(other.gameObject);
 
-        redBot.PlayOneShot( hitSounds[ (int)Math.Round( UnityEngine.Random.value * hitSounds.Length ) ] );
+        if ( hitSounds.Length > 0 )
+            redBot.PlayOneShot( hitSounds[ (int)Math.Round( UnityEngine.Random.value * ( hitSounds.Length - 1 ) ) ] );
 
         if (invuln > 0f)
             return;
@@ -71,14 +72,19 @@ public class CharacterHealth : MonoBehaviour
         Screenshake.Shake(0.3f, 0.3f);
         invuln = InvulnAfterHit;
         if (health == 0) {
-            Screenshake.Shake(1f, 1.2f);
-            gameObject.SetActive(false);
-            //ScrollingManager.SetSpeed(0f);
-            var cam = Camera.main.GetComponent<CameraEndBehaviour>();
-            if (cam != null)
-            {
-                cam.Restart();
-            }
+            Kill();
+        }
+    }
+
+    public void Kill()
+    {
+        UIManager.UpdateHealth(0);
+        Screenshake.Shake(1f, 1.2f);
+        gameObject.SetActive(false);
+        //ScrollingManager.SetSpeed(0f);
+        var cam = Camera.main.GetComponent<CameraEndBehaviour>();
+        if (cam != null) {
+            cam.Restart();
         }
     }
 
