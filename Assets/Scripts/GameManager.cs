@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
 
     private void OnCameraDetached()
     {
-        SceneManager.LoadScene("Scenes/Credits");
+
     }
 	
 }

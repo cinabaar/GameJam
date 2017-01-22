@@ -15,7 +15,8 @@ public class CameraEndBehaviour : MonoBehaviour {
     public Image BlackoutRenderer;
     public float BlackoutDelay = 2f;
     public float BlackoutDuration = 1f;
-    public string NextSceneName = "";
+    public string SuccessSceneName = "";
+    public string FailSceneName = "";
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class CameraEndBehaviour : MonoBehaviour {
         isEnding = true;
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
-        StartCoroutine(AnimateEnd());
+        StartCoroutine(AnimateEnd(true));
     }
 
     public void Restart()
@@ -43,8 +44,8 @@ public class CameraEndBehaviour : MonoBehaviour {
         isEnding = true;
         CameraAlign.enabled = false;
         CameraScroll.enabled = true;
-        NextSceneName = SceneManager.GetActiveScene().name;
-        StartCoroutine(AnimateEnd());
+        FailSceneName = SceneManager.GetActiveScene().name;
+        StartCoroutine(AnimateEnd(false));
     }
 
     IEnumerator AnimateStart()
@@ -58,7 +59,7 @@ public class CameraEndBehaviour : MonoBehaviour {
         BlackoutRenderer.gameObject.SetActive(false);
     }
 
-    IEnumerator AnimateEnd()
+    IEnumerator AnimateEnd(bool Success)
     {
         yield return new WaitForSeconds(BlackoutDelay);
 
@@ -67,8 +68,8 @@ public class CameraEndBehaviour : MonoBehaviour {
             BlackoutRenderer.color = new Color(0f, 0f, 0f, t / BlackoutDuration);
             yield return new WaitForEndOfFrame();
         }
-
-        if (!string.IsNullOrEmpty(NextSceneName))
-            SceneManager.LoadScene(NextSceneName);
+        var sceneName = Success ? SuccessSceneName : FailSceneName;
+        if (!string.IsNullOrEmpty(sceneName))
+            SceneManager.LoadScene(sceneName);
     }
 }

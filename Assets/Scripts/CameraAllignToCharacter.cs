@@ -26,7 +26,11 @@ public class CameraAllignToCharacter : MonoBehaviour
         {
             if (CameraDetached != null)
             {
-                CameraDetached();
+                var cameraEnd = GetComponent<CameraEndBehaviour>();
+                if(cameraEnd)
+                {
+                    cameraEnd.Restart();
+                }
             }
             return;
         }
