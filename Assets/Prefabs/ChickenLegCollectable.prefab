@@ -40,6 +40,7 @@ GameObject:
   - component: {fileID: 114848242644100202}
   - component: {fileID: 58828755327849698}
   - component: {fileID: 114294041041332128}
+  - component: {fileID: 114106308253860472}
   m_Layer: 0
   m_Name: ChickenLegCollectable
   m_TagString: Untagged
@@ -88,6 +89,18 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.82
+--- !u!114 &114106308253860472
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1836581986425578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b0ba50d2a106024f9f5360c92f394c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Speed: 20
 --- !u!114 &114294041041332128
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -124,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Duration: 2
   Height: 18
+  ShakeOnEnd: 0
 --- !u!212 &212763325605851746
 SpriteRenderer:
   m_ObjectHideFlags: 1
