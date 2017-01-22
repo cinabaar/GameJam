@@ -35,8 +35,8 @@ public class PlantsShake : MonoBehaviour
         {
             instance.transform.Translate( new Vector3( 0, Mathf.Sin( Time.time * frequency + offset * index ) * amplitude * Time.deltaTime ) );
             ++index;
-
-            if ( instance.transform.position.x + burningOffset < player.position.x )
+            
+            if (player!=null && instance.transform.position.x + burningOffset < player.position.x )
             {
                 // make it burn!
                 SpriteRenderer renderer = instance.GetComponent<SpriteRenderer>();
