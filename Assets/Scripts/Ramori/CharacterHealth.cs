@@ -17,11 +17,17 @@ public class CharacterHealth : MonoBehaviour
     private Material m_DefaultMaterial;
     public Action PlayerDied;
 
+    static AudioSource redBot;
+    public AudioClip[] hitSounds;
+
     void Start()
     {
         m_Anim = GetComponent<Animator>();
         m_Renderer = GetComponent<SpriteRenderer>();
         m_DefaultMaterial = m_Renderer.material;
+
+        if ( redBot == null )
+            redBot = GameObject.Find( "RedBot" ).GetComponent<AudioSource>();
 
         health = MaxHealth;
         UIManager.InitHealth(health);
@@ -50,6 +56,8 @@ public class CharacterHealth : MonoBehaviour
         other.enabled = false;
         ExplosionManager.Explode(other.gameObject, 1f + UnityEngine.Random.value * 0.2f);
         Destroy(other.gameObject);
+
+        redBot.PlayOneShot( hitSounds[ (int)Math.Round( UnityEngine.Random.value * hitSounds.Length ) ] );
 
         if (invuln > 0f)
             return;

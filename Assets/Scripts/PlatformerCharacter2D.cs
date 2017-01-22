@@ -12,24 +12,42 @@ namespace UnityStandardAssets._2D
         Sliding
     }
 
+    [RequireComponent(typeof(AudioSource))]
     public class PlatformerCharacter2D : MonoBehaviour
     {
-        [SerializeField] private float m_MoveSpeed = 10f;                    // The fastest the player can travel in the x axis.
-        [SerializeField] private float m_JumpHeight = 1000f;                  // Amount of force added when the player jumps.
-        [SerializeField] private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
-        [SerializeField] private float m_MaxSlideTime = 1f;
-        [SerializeField] private float m_SlideSpeedMultiplier = 1.5f;
-        [SerializeField] private Vector2 m_SlideCapsuleSize = new Vector2(4, 4);
-        [SerializeField] private float m_MinJumpTime = 0.2f;
-        [SerializeField] private float m_SlideCooldownTime = 0.5f;
+        [SerializeField]
+        private float m_MoveSpeed = 10f;                    // The fastest the player can travel in the x axis.
+        [SerializeField]
+        private float m_JumpHeight = 1000f;                  // Amount of force added when the player jumps.
+        [SerializeField]
+        private LayerMask m_WhatIsGround;                  // A mask determining what is ground to the character
+        [SerializeField]
+        private float m_MaxSlideTime = 1f;
+        [SerializeField]
+        private float m_SlideSpeedMultiplier = 1.5f;
+        [SerializeField]
+        private Vector2 m_SlideCapsuleSize = new Vector2(4, 4);
+        [SerializeField]
+        private float m_MinJumpTime = 0.2f;
+        [SerializeField]
+        private float m_SlideCooldownTime = 0.5f;
 
-        [SerializeField] private Animator m_Anim;            // Reference to the player's animator component.
-        [SerializeField] private Rigidbody2D m_Rigidbody2D;
+        [SerializeField]
+        private Animator m_Anim;            // Reference to the player's animator component.
+        [SerializeField]
+        private Rigidbody2D m_Rigidbody2D;
 
-        [SerializeField] private CapsuleCollider2D m_DefaultCollider;
-        [SerializeField] private CapsuleCollider2D m_SlideCollider;
+        [SerializeField]
+        private CapsuleCollider2D m_DefaultCollider;
+        [SerializeField]
+        private CapsuleCollider2D m_SlideCollider;
 
-        [SerializeField] private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
+        private AudioSource m_Audio;
+        [SerializeField] private AudioClip m_jumpClip;
+        [SerializeField] private AudioClip m_slideClip;
+
+        [SerializeField]
+        private Transform m_GroundCheck;    // A position marking where to check if the player is grounded.
 
         const float k_GroundedRadius = .3f; // Radius of the overlap circle to determine if grounded
         private bool m_Grounded;            // Whether or not the player is grounded.
@@ -53,16 +71,24 @@ namespace UnityStandardAssets._2D
             m_PlayerState = newState;
         }
 
+        private void Start()
+        {
+            m_Audio = GetComponent<AudioSource>();
+        }
+
         private void FixedUpdate()
         {
-            if (slideCooldown > 0f) {
+            if (slideCooldown > 0f)
+            {
                 slideCooldown -= Time.fixedDeltaTime;
             }
-                
-            if (slideDuration > 0f) {
+
+            if (slideDuration > 0f)
+            {
                 slideDuration -= Time.fixedDeltaTime;
 
-                if (slideDuration <= 0f) {
+                if (slideDuration <= 0f)
+                {
                     StopSliding();
                 }
             }
@@ -79,7 +105,7 @@ namespace UnityStandardAssets._2D
                         m_Grounded = true;
                 }
             }
-            if(m_Grounded && m_PlayerState != PlayerState.Sliding)
+            if (m_Grounded && m_PlayerState != PlayerState.Sliding)
             {
                 SetPlayerState(PlayerState.Running);
             }
@@ -90,7 +116,7 @@ namespace UnityStandardAssets._2D
             yield return new WaitForSeconds(0.2f);
             delayGroundCheckForJump = false;
         }
-        
+
         private void StartSliding()
         {
             m_Anim.SetInteger("JumpLevel", 0);
@@ -99,6 +125,7 @@ namespace UnityStandardAssets._2D
             m_Anim.SetBool("Slide", true);
             SetPlayerState(PlayerState.Sliding);
             slideDuration = m_MaxSlideTime;
+            m_Audio.PlayOneShot( m_slideClip );
         }
 
         private void StopSliding()
@@ -119,7 +146,7 @@ namespace UnityStandardAssets._2D
             {
                 StartSliding();
             }
-            else if(!slide && m_PlayerState == PlayerState.Sliding)
+            else if (!slide && m_PlayerState == PlayerState.Sliding)
             {
                 StopSliding();
             }
@@ -127,16 +154,18 @@ namespace UnityStandardAssets._2D
             // If the player should jump...
             if (m_Grounded && jump && (m_PlayerState == PlayerState.Running || m_PlayerState == PlayerState.Sliding))
             {
-                if (m_PlayerState == PlayerState.Sliding) {
+                if (m_PlayerState == PlayerState.Sliding)
+                {
                     StopSliding();
                 }
-                
+
                 SetPlayerState(PlayerState.Jumping);
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 1);
                 var jumpVelocity = Mathf.Sqrt(2 * m_Rigidbody2D.gravityScale * m_JumpHeight);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
                 waitForJumpInputReset = true;
+                m_Audio.PlayOneShot( m_jumpClip );
                 StartCoroutine(DelayGroundCheckForJump());
             }
             else if (jump && !waitForJumpInputReset && (m_PlayerState == PlayerState.Jumping || (m_PlayerState == PlayerState.Running && !m_Grounded)))
@@ -146,6 +175,7 @@ namespace UnityStandardAssets._2D
                 m_Grounded = false;
                 m_Anim.SetInteger("JumpLevel", 2);
                 m_Rigidbody2D.velocity = new Vector2(m_Rigidbody2D.velocity.x, 0) + Vector2.up * jumpVelocity;
+                m_Audio.PlayOneShot( m_jumpClip );
                 StartCoroutine(DelayGroundCheckForJump());
             }
             if (m_Grounded && m_PlayerState == PlayerState.Running)
@@ -157,7 +187,7 @@ namespace UnityStandardAssets._2D
             {
                 currentSpeedMultipler = Mathf.SmoothDamp(currentSpeedMultipler, 1, ref currentVelocity, 0.2f);
             }
-            else if(m_PlayerState == PlayerState.Sliding)
+            else if (m_PlayerState == PlayerState.Sliding)
             {
                 currentSpeedMultipler = m_SlideSpeedMultiplier;
             }

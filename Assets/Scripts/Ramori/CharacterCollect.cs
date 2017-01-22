@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class CharacterCollect : MonoBehaviour
 {
+    static AudioSource redBot;
+    public AudioClip collectSound;
+
     int collected = 0;
     public Text CollectedText;
 
@@ -11,6 +14,9 @@ public class CharacterCollect : MonoBehaviour
     {
         if (CollectedText != null)
             CollectedText.text = "0";
+
+        if ( redBot == null )
+            redBot = GameObject.Find( "RedBot" ).GetComponent<AudioSource>();
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -22,6 +28,8 @@ public class CharacterCollect : MonoBehaviour
         CollectedText.text = collected + "";
         ExplosionManager.Collect(collectable.gameObject);
         Destroy(collectable.gameObject);
+
+        redBot.PlayOneShot( collectSound );
     }
 }
 
