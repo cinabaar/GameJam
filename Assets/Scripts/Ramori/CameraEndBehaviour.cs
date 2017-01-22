@@ -13,6 +13,7 @@ public class CameraEndBehaviour : MonoBehaviour {
     AudioSource AudioSource;
 
     bool isEnding = false;
+    bool firedOnce = false;
 
     public Image BlackoutRenderer;
     public float BlackoutDelay = 2f;
@@ -27,12 +28,16 @@ public class CameraEndBehaviour : MonoBehaviour {
         CameraScroll = GetComponent<ScrollingBehaviour>();
         AudioSource = GetComponent<AudioSource>();
         StartCoroutine(AnimateStart());
+
     }
 
     void FixedUpdate()
     {
-        if ( !AudioSource.isPlaying )
+        if ( !AudioSource.isPlaying && !firedOnce )
+        {
+            firedOnce = true;
             AudioSource.PlayOneShot( EndClip, 1.0f );
+        }
     }
 
     public void End()
