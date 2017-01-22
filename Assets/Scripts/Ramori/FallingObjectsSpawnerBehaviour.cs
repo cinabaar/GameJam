@@ -6,6 +6,7 @@ public class FallingObjectsSpawnerBehaviour : MonoBehaviour
 
     public float TriggerDistance = 25f;
     public GameObject FallingObjectPrefab;
+    public bool ShakeOnEnd;
 
     void Start()
     {
@@ -20,6 +21,10 @@ public class FallingObjectsSpawnerBehaviour : MonoBehaviour
             go.transform.SetParent(transform.parent);
             go.transform.localPosition = transform.localPosition;
             go.transform.localRotation = transform.localRotation;
+
+            var falling = go.GetComponent<FallingObstacleBehaviour>();
+            if (falling != null)
+                falling.ShakeOnEnd = ShakeOnEnd;
 
             Destroy(gameObject);
         }

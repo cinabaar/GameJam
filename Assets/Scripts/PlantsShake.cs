@@ -19,19 +19,24 @@ public class PlantsShake : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        smilingFoliage = GameObject.FindGameObjectsWithTag( "SmilingFoliage" );
+        try
+        {
+            smilingFoliage = GameObject.FindGameObjectsWithTag("SmilingFoliage");
+        }
+        catch { }
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (smilingFoliage == null) return;
         int index = 0;
         foreach ( GameObject instance in smilingFoliage )
         {
             instance.transform.Translate( new Vector3( 0, Mathf.Sin( Time.time * frequency + offset * index ) * amplitude * Time.deltaTime ) );
             ++index;
-
-            if ( instance.transform.position.x + burningOffset < player.position.x )
+            
+            if (player!=null && instance.transform.position.x + burningOffset < player.position.x )
             {
                 // make it burn!
                 SpriteRenderer renderer = instance.GetComponent<SpriteRenderer>();

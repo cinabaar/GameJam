@@ -12,7 +12,8 @@ public class CharacterCollect : MonoBehaviour
 
     private void Start()
     {
-        CollectedText.text = "0";
+        if (CollectedText != null)
+            CollectedText.text = "0";
 
         if ( redBot == null )
             redBot = GameObject.Find( "RedBot" ).GetComponent<AudioSource>();
@@ -25,6 +26,7 @@ public class CharacterCollect : MonoBehaviour
         var collectable = other.gameObject.GetComponent<CollectableComponent>();
         collected++;
         CollectedText.text = collected + "";
+        ExplosionManager.Collect(collectable.gameObject);
         Destroy(collectable.gameObject);
 
         redBot.PlayOneShot( collectSound );
