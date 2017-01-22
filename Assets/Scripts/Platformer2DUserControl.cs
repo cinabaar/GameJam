@@ -4,7 +4,7 @@ using UnityStandardAssets.CrossPlatformInput;
 
 namespace UnityStandardAssets._2D
 {
-    [RequireComponent(typeof (PlatformerCharacter2D))]
+    [RequireComponent(typeof(PlatformerCharacter2D))]
     public class Platformer2DUserControl : MonoBehaviour
     {
         private PlatformerCharacter2D m_Character;
@@ -30,7 +30,7 @@ namespace UnityStandardAssets._2D
         private void FixedUpdate()
         {
             // Read the inputs.
-            bool slide = CrossPlatformInputManager.GetButtonDown("Fire2");
+            bool slide = Input.GetKey(KeyCode.RightAlt);
             // Pass all parameters to the character control script.
             m_Character.Move(slide, m_Jump);
             m_Jump = false;

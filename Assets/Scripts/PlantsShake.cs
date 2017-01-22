@@ -19,7 +19,11 @@ public class PlantsShake : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        smilingFoliage = GameObject.FindGameObjectsWithTag( "SmilingFoliage" );
+        try
+        {
+            smilingFoliage = GameObject.FindGameObjectsWithTag("SmilingFoliage");
+        }
+        catch { }
     }
 
     // Update is called once per frame
