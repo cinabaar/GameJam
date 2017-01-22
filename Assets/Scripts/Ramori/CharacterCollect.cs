@@ -29,6 +29,7 @@ public class CharacterCollect : MonoBehaviour
         ExplosionManager.Collect(collectable.gameObject);
         Destroy(collectable.gameObject);
 
+        redBot.pitch = 1f;
         redBot.PlayOneShot( collectSound );
     }
 }
